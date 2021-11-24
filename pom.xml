@@ -151,6 +151,12 @@
             <version>1.0.8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.jikoo.OpenInv</groupId>
+            <artifactId>openinvapi</artifactId>
+            <version>4.3.1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <scm>

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
 
+import com.lishid.openinv.IOpenInv;
+
 /**
  * Implementation of inventory-based accounts with a virtual overflow capacity.
  * Has support for player accounts specifically and works with any other container storage.
@@ -30,6 +32,7 @@ import java.util.concurrent.*;
 public class GringottsAccount {
     public final  AccountHolder owner;
     private final DAO           dao = Gringotts.instance.getDao();
+    private final IOpenInv openInv = Gringotts.instance.getOpenInv();
 
     public GringottsAccount(AccountHolder owner) {
         if (owner == null) {
@@ -204,6 +207,7 @@ public class GringottsAccount {
             }
 
             if (remaining == 0) {
+                playerOpt.ifPresent(Player::saveData);
                 return TransactionResult.SUCCESS;
             }
 
@@ -380,13 +384,25 @@ public class GringottsAccount {
      * empty.
      */
     private Optional<Player> playerOwner() {
-        if (owner instanceof PlayerAccountHolder) {
-            OfflinePlayer player = ((PlayerAccountHolder) owner).accountHolder;
+        Callable<Optional<Player>> callMe = () -> {
+            if (owner instanceof PlayerAccountHolder) {
+                OfflinePlayer player = ((PlayerAccountHolder) owner).accountHolder;
 
-            return Optional.ofNullable(player.getPlayer());
-        }
+                if(!player.isOnline()) {
+                    if(openInv != null) {
+                        return Optional.ofNullable(openInv.loadPlayer(player));
+                    } else {
+                        return Optional.empty();
+                    }
+                } else {
+                    return Optional.ofNullable(player.getPlayer());
+                }
+            }
 
-        return Optional.empty();
+            return Optional.empty();
+        };
+
+        return getTimeout(callSync(callMe));
     }
 
     private CompletableFuture<Long> countChestInventories() {

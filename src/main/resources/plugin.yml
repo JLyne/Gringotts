@@ -10,7 +10,7 @@ database: true
 api-version: "1.18"
 api: "1.18"
 
-softdepend: [ PlaceholderAPI ]
+softdepend: [ PlaceholderAPI, OpenInv ]
 loadbefore: [ Vault ]
 
 libraries:

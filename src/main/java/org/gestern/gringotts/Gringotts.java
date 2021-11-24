@@ -8,6 +8,7 @@ import com.avaje.ebean.config.dbplatform.SQLitePlatform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
+import com.lishid.openinv.IOpenInv;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
@@ -66,6 +67,7 @@ public class Gringotts extends JavaPlugin {
     private       Accounting           accounting;
     private       DAO                  dao;
     private       Eco                  eco;
+    private       IOpenInv             openInv;
 
     /**
      * Instantiates a new Gringotts.
@@ -94,6 +96,8 @@ public class Gringotts extends JavaPlugin {
         Thread.currentThread().setContextClassLoader(getClassLoader());
         ebean = EbeanServerFactory.create(dbConfig);
         Thread.currentThread().setContextClassLoader(previous);
+
+        openInv = (IOpenInv) Bukkit.getPluginManager().getPlugin("OpenInv");
     }
 
     public String getVersion() {
@@ -524,5 +528,9 @@ public class Gringotts extends JavaPlugin {
      */
     public Eco getEco() {
         return eco;
+    }
+
+    public IOpenInv getOpenInv() {
+        return openInv;
     }
 }
